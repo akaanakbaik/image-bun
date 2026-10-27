@@ -1,40 +1,140 @@
 # Bun Docker Images
 
-Universal multi-architecture Bun Docker images for Pterodactyl.
+Universal Bun runtime images for JavaScript and TypeScript applications.
 
-## Available versions
+**Repository:** [akaanakbaik/image-bun](https://github.com/akaanakbaik/image-bun)
 
-| Bun | Image tag |
+**Container registry:** `ghcr.io/akaanakbaik/image-bun`
+
+**GitHub Actions:** [https://github.com/akaanakbaik/image-bun/actions](https://github.com/akaanakbaik/image-bun/actions)
+
+## Available images
+
+| Runtime version | Image | Additional tag |
+|---|---|---|
+| 1.4.4 | `ghcr.io/akaanakbaik/image-bun:bun_1.4.4` | — |
+| 1.4.3 | `ghcr.io/akaanakbaik/image-bun:bun_1.4.3` | — |
+| 1.4.2 | `ghcr.io/akaanakbaik/image-bun:bun_1.4.2` | — |
+| 1.4.1 | `ghcr.io/akaanakbaik/image-bun:bun_1.4.1` | — |
+| 1.4.0 | `ghcr.io/akaanakbaik/image-bun:bun_1.4.0` | — |
+| Latest alias | `ghcr.io/akaanakbaik/image-bun:bun_latest` | Points to 1.4.4 in this release |
+
+## Supported platforms
+
+- `linux/amd64` — x86-64 servers
+- `linux/arm64` — ARM64 servers
+
+Images are built through GitHub Actions using Docker Buildx.
+Platform support describes the configured build targets; consult the published manifest for confirmation.
+
+## Quick start with Docker
+
+```bash
+docker pull ghcr.io/akaanakbaik/image-bun:bun_1.4.4
+docker run --rm ghcr.io/akaanakbaik/image-bun:bun_1.4.4
+```
+
+Run an application from the current directory:
+
+```bash
+docker run --rm -v "$PWD:/home/container" \
+  -e STARTUP="bun run index.ts" \
+  ghcr.io/akaanakbaik/image-bun:bun_1.4.4
+```
+
+## Pterodactyl setup
+
+1. Open the Pterodactyl administrator panel.
+2. Edit the relevant Egg's Docker image list.
+3. Add one of the image URLs from the table above.
+4. Configure the Egg startup command for your application.
+5. Select the image for the server and restart or reinstall as appropriate.
+
+The image alone does not replace a Pterodactyl Egg.
+The Egg must provide a compatible startup configuration and installation procedure.
+
+### Startup examples
+
+```bash
+bun run index.ts
+bun run start
+bun install && bun run start
+```
+
+Choose **one** startup command appropriate to your application.
+For Pterodactyl, set the `STARTUP` environment variable if required by the image's entrypoint.
+
+## Working directory and permissions
+
+- Application working directory: `/home/container`.
+- Application files should be stored in a persistent Pterodactyl volume.
+- Avoid running applications as root.
+- Ensure mounted files are writable by the container user.
+
+## Environment variables
+
+| Variable | Purpose |
 |---|---|
-| 1.4.4 | bun_1.4.4 |
-| 1.4.3 | bun_1.4.3 |
-| 1.4.2 | bun_1.4.2 |
-| 1.4.1 | bun_1.4.1 |
-| 1.4.0 | bun_1.4.0 |
-| Latest stable | bun_latest |
+| `STARTUP` | Shell command executed by the container entrypoint, when supported |
+| Application-specific variables | Configure your bot, API, or service |
 
-Registry: `ghcr.io/akaanakbaik/image-bun`
+Do not commit credentials, API tokens, or passwords to the repository.
+Pass secrets through the server's protected environment settings.
 
-Supported architectures: linux/amd64 and linux/arm64.
+## CI/CD
 
-## Pterodactyl
+The GitHub Actions workflow builds and tests runtime images.
+Successful publishing jobs push images to GitHub Container Registry.
 
-Working directory: `/home/container`
+Typical workflow:
 
-Container user: UID/GID 1000
+1. Update runtime versions or image configuration.
+2. Commit and push to `master`.
+3. Wait for GitHub Actions tests.
+4. Publish the multiarchitecture image.
+5. Confirm the required tag is available before production deployment.
 
-Example startup:
+## Security and maintenance
 
-`bun run index.ts`
+- Prefer maintained runtime versions for production.
+- Older versions may no longer receive upstream security fixes.
+- Pin an exact image digest when reproducibility is required.
+- Image tags may be republished after dependency or base-image updates.
+- Rebuild images when upstream security patches become available.
+- Review third-party dependencies and application packages separately.
+- Use least-privilege container settings and appropriate resource limits.
+- Avoid exposing unnecessary ports or sensitive files.
 
-Supports the STARTUP environment variable.
+## Limitations
 
-## Included tools
+- These are runtime/toolchain images, not complete application templates.
+- Application dependencies and startup configuration remain your responsibility.
+- A successful image build does not guarantee compatibility with every Egg.
+- Published GHCR package visibility may require configuration to allow anonymous pulls.
+- Runtime-specific behavior can differ across versions and CPU architectures.
 
-Bun, Bash, Git, curl, Python 3, build-essential, and tini.
+## Troubleshooting
 
-## Updating
+If a server does not start:
 
-Versions are fixed to the listed tags.
-The bun_latest alias points to Bun 1.4.4 for this release.
-New versions require updating the workflow and rebuilding.
+1. Confirm the selected image tag exists.
+2. Inspect the Pterodactyl console and Wings logs.
+3. Check the startup command and required files.
+4. Verify file permissions and mounted volumes.
+5. Confirm all required application dependencies are installed.
+
+## Contributing
+
+Bug reports and improvements can be submitted through GitHub Issues or pull requests.
+
+**Issues:** https://github.com/akaanakbaik/image-bun/issues
+
+## License
+
+Refer to the repository's LICENSE file if present.
+No license is implied when a LICENSE file is absent.
+
+## Disclaimer
+
+These images are community-maintained and are not official Pterodactyl images.
+Upstream runtime projects retain their respective trademarks and licenses.
