@@ -1,4 +1,5 @@
-FROM oven/bun:latest
+ARG BUN_VERSION=1.4.4
+FROM oven/bun:${BUN_VERSION}
 
 USER root
 

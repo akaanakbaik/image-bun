@@ -11,28 +11,44 @@ permissions:
 
 jobs:
   test:
+    name: Test Bun ${{ matrix.version }}
     runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        version: ['1.4.0', '1.4.1', '1.4.2', '1.4.3', '1.4.4']
     steps:
       - uses: actions/checkout@v4
 
       - name: Build image
-        run: docker build -t bun-test .
+        run: |
+          docker build \
+            --build-arg BUN_VERSION=${{ matrix.version }} \
+            -t bun-test:${{ matrix.version }} .
 
       - name: Test runtime
         run: |
-          docker run --rm bun-test
-          docker run --rm --entrypoint bun bun-test --version
-          docker run --rm --entrypoint bun bun-test \
+          docker run --rm bun-test:${{ matrix.version }}
+          docker run --rm \
+            --entrypoint bun \
+            bun-test:${{ matrix.version }} \
             -e "console.log('Bun runtime OK')"
           docker run --rm \
             -e STARTUP='bun -e "console.log(123)"' \
-            bun-test
-          docker run --rm --entrypoint id bun-test -u
+            bun-test:${{ matrix.version }}
+          docker run --rm \
+            --entrypoint id \
+            bun-test:${{ matrix.version }} -u
 
   publish:
+    name: Publish Bun ${{ matrix.version }}
     needs: test
     if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        version: ['1.4.0', '1.4.1', '1.4.2', '1.4.3', '1.4.4']
     steps:
       - uses: actions/checkout@v4
 
@@ -46,13 +62,17 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Publish image
+      - name: Build and publish
         uses: docker/build-push-action@v6
         with:
           context: .
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ghcr.io/akaanakbaik/image-bun:bun_latest
+          build-args: |
+            BUN_VERSION=${{ matrix.version }}
+          tags: |
+            ghcr.io/akaanakbaik/image-bun:bun_${{ matrix.version }}
+            ${{ matrix.version == '1.4.4' && 'ghcr.io/akaanakbaik/image-bun:bun_latest' || '' }}
           labels: |
             org.opencontainers.image.source=https://github.com/akaanakbaik/image-bun
             org.opencontainers.image.description=Universal Bun image for Pterodactyl

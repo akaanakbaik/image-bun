@@ -1,39 +1,40 @@
 # Bun Docker Images
 
-Multi-architecture Bun Docker image for Pterodactyl.
+Universal multi-architecture Bun Docker images for Pterodactyl.
 
-## Image
+## Available versions
 
-`ghcr.io/akaanakbaik/image-bun:bun_latest`
+| Bun | Image tag |
+|---|---|
+| 1.4.4 | bun_1.4.4 |
+| 1.4.3 | bun_1.4.3 |
+| 1.4.2 | bun_1.4.2 |
+| 1.4.1 | bun_1.4.1 |
+| 1.4.0 | bun_1.4.0 |
+| Latest stable | bun_latest |
 
-## Platforms
+Registry: `ghcr.io/akaanakbaik/image-bun`
 
-- linux/amd64
-- linux/arm64
-
-## Included tools
-
-Bun, Bash, Git, curl, Python 3, build-essential,
-pkg-config, and tini.
+Supported architectures: linux/amd64 and linux/arm64.
 
 ## Pterodactyl
 
 Working directory: `/home/container`
 
-Container UID/GID: `1000:1000`
+Container user: UID/GID 1000
 
-Example startup command:
+Example startup:
 
 `bun run index.ts`
 
-Or:
+Supports the STARTUP environment variable.
 
-`bun start`
+## Included tools
 
-The image supports the STARTUP environment variable.
+Bun, Bash, Git, curl, Python 3, build-essential, and tini.
 
-## Updates
+## Updating
 
-The latest Bun version is resolved during builds.
-Existing published images are not automatically updated
-until the publishing workflow runs again.
+Versions are fixed to the listed tags.
+The bun_latest alias points to Bun 1.4.4 for this release.
+New versions require updating the workflow and rebuilding.
